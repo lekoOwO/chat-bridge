@@ -1,0 +1,6 @@
+appstate.json
+config.json
+package-lock.json
+._*
+node_modules/
+temp/
