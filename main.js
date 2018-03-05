@@ -6,8 +6,8 @@ format.extend(String.prototype, {})
 
 console.log("   ╭─────────────────────────────────────╮")
 console.log("   │                                     │")
-console.log("   │    錢幣幣 Desu                       │")
-console.log("   │    github.com/                      │")
+console.log("   │   錢幣幣 Desu                        │")
+console.log("   │   github.com/rexx0520/TGBridge_JS   │")
 console.log("   │                                     │")
 console.log("   ╰─────────────────────────────────────╯")
 
