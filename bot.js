@@ -28,6 +28,7 @@ const bot = new TelegramBot(token, { polling: true });
 const replyToTextLimit = main.replyToTextLimit;
 
 const removeEmpty = (x) => {var obj = Object.assign({}, x);Object.keys(obj).forEach((key) => (obj[key] == null) && delete obj[key]);return obj;}
+const firstUpperCase = ([first, ...rest]) => first.toUpperCase() + rest.join('');
 
 exports.init = () => bot.getMe().then(result => exports.id = result.id)
 exports.send = ({text='', chatId=main.testTgId, photo, audio, doc, game, video, voice, videoNote, venue, contact, location, sticker, cb=() => {}}={}) => {
@@ -54,18 +55,23 @@ getMessageBasicInfo = message => {
   if (message.reply_to_message){
     var replyToId = message.reply_to_message.from.id;
     var replyToName = message.reply_to_message.from.first_name;
+    var replyToText = message.reply_to_message.caption ? message.reply_to_message.caption : message.reply_to_message.text
+    if (!replyToText) {
+      replyToText = '[{}]'.format(firstUpperCase(['text', 'audio', 'document', 'game', 'photo', 'sticker', 'video', 'voice', 'video_note', 'contact', 'location', 'venue'].filter(
+        x => message.reply_to_message[x]).pop().replace('_note', ' Note')));
+      var noTextInOriginMessage = true;
+    }
     if (replyToId == exports.id){
       replyToName = message.reply_to_message.text.split('>')[0].slice(1);
-      var replyToText = message.reply_to_message.caption ? message.reply_to_message.caption : message.reply_to_message.text;
       var offset = '<>: '.length
-      var isSliced = replyToText.length > replyToName.length+offset+replyToTextLimit;
-      replyToText = replyToText.substr(replyToName.length+offset, replyToTextLimit);
+      var isSliced = noTextInOriginMessage ? false : replyToText.length > replyToName.length+offset+replyToTextLimit;
+      replyToText = noTextInOriginMessage ? replyToText : replyToText.substr(replyToName.length+offset, replyToTextLimit);
     }
     else {
-      var replyToText = message.reply_to_message.caption ? message.reply_to_message.caption : message.reply_to_message.text;
-      var isSliced = replyToText.length > replyToTextLimit;
-      replyToText = replyToText.substr(0, replyToTextLimit);
-  }}
+      var isSliced = noTextInOriginMessage ? false : replyToText.length > replyToTextLimit;
+      replyToText = noTextInOriginMessage ? replyToText : replyToText.substr(0, replyToTextLimit);
+  }
+}
   if (message.forward_from){
     var forwardFromId = message.forward_from.id;
     if (forwardFromId == exports.id) var forwardFromName = message.forward_from.text.split('>')[0].slice(1);
