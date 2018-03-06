@@ -15,9 +15,9 @@ var [testMsgrId, testTgId, groupTgId, groupMsgrId, debug, fbAccount, tgUsers, to
 var init = () => {
   if (fs.existsSync('config.json')) {
     jsonfile.readFile('./config.json', (err, obj) => {
-      [testMsgrId, testTgId, groupTgId, groupMsgrId, debug, fbAccount, tgUsers, token] = [
-        exports.testMsgrId, exports.testTgId, exports.groupTgId, exports.groupMsgrId, exports.debug, exports.fbAccount, exports.tgUsers, exports.token] = [
-          obj.testMsgrId, obj.testTgId, obj.groupTgId, obj.groupMsgrId, obj.debug, obj.fbAccount, obj.tgUsers, obj.token];
+      [testMsgrId, testTgId, groupTgId, groupMsgrId, debug, fbAccount, tgUsers, token, replyToTextLimit] = [
+        exports.testMsgrId, exports.testTgId, exports.groupTgId, exports.groupMsgrId, exports.debug, exports.fbAccount, exports.tgUsers, exports.token, exports.replyToTextLimit] = [
+          obj.testMsgrId, obj.testTgId, obj.groupTgId, obj.groupMsgrId, obj.debug, obj.fbAccount, obj.tgUsers, obj.token, obj.replyToTextLimit];
       console.log('DEBUG = ' + debug.toString());
       bot = require("./bot.js")
       bot.init()
@@ -42,6 +42,7 @@ var init = () => {
         1234567890: 'Test Nickname for specified ID'
       },
       token: "TG_BOT_TOKEN",
+      replyToTextLimit: 8
 
     }, {spaces: 2}, () => {
       console.error('請正確填寫 config.json!');
@@ -65,10 +66,10 @@ getTgInfo = (userId, userName, chatId, replyToId, replyToName, forwardFromId, fo
   return [userName, threadId, replyToName, forwardFromName]
 }
 
-exports.botMessage = ({chatId, userId, text='', userName, addition='', replyToId, replyToName, forwardFromId, forwardFromName, replyToText, attachment, sticker, cb=() => {}}={}) => {
+exports.botMessage = ({chatId, userId, text='', userName, addition='', replyToId, replyToName, forwardFromId, forwardFromName, replyToText, attachment, sticker, cb=() => {}, isSliced}={}) => {
   [userName, threadId, replyToName, forwardFromName] = getTgInfo(userId, userName, chatId, replyToId, replyToName, forwardFromId, forwardFromName);
   if (!threadId) return
-  if (replyToName) text = replyToId == bot.id ? '<{}>:\n[回覆 {}]\n{}'.format(userName, replyToName, text): '<{}>:({}: {}...)\n{}'.format(userName, replyToName, replyToText, text);
+  if (replyToName) text = isSliced ? '<{}>:({}: {}...)\n{}'.format(userName, replyToName, replyToText, text) : '<{}>:({}: {})\n{}'.format(userName, replyToName, replyToText, text);
   else if (forwardFromName) text = '<{}>:\n[轉傳自 {}]\n{}'.format(userName, forwardFromName, text) ;
   else text = '<{}>: {}'.format(userName, text);
   text += addition;

@@ -95,4 +95,6 @@ else {
   fb(fbAccount, (err, api) => {
     if(err) return console.error(err);
     fs.writeFileSync('appstate.json', JSON.stringify(api.getAppState())); // session 保存
+    console.log('首次讀取 config, 已保存 session, 請重新開啟!')
+    process.exit();
 });}

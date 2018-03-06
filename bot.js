@@ -25,6 +25,8 @@ const token = main.token;
 const TelegramBot = require('node-telegram-bot-api'); // api
 const bot = new TelegramBot(token, { polling: true });
 
+const replyToTextLimit = main.replyToTextLimit;
+
 const removeEmpty = (x) => {var obj = Object.assign({}, x);Object.keys(obj).forEach((key) => (obj[key] == null) && delete obj[key]);return obj;}
 
 exports.init = () => bot.getMe().then(result => exports.id = result.id)
@@ -55,9 +57,14 @@ getMessageBasicInfo = message => {
     if (replyToId == exports.id){
       replyToName = message.reply_to_message.text.split('>')[0].slice(1);
       var replyToText = message.reply_to_message.caption ? message.reply_to_message.caption : message.reply_to_message.text;
-      replyToText = replyToText.substr(0,8);
+      var isSliced = replyToText.length > replyToName.length+4+replyToTextLimit;
+      replyToText = replyToText.substr(replyToName.length+4, replyToTextLimit);
     }
-  }
+    else {
+      var replyToText = message.reply_to_message.caption ? message.reply_to_message.caption : message.reply_to_message.text;
+      var isSliced = replyToText.length > (replyToTextLimit+1);
+      replyToText = replyToText.substr(0, replyToTextLimit);
+  }}
   if (message.forward_from){
     var forwardFromId = message.forward_from.id;
     if (forwardFromId == exports.id) var forwardFromName = message.forward_from.text.split('>')[0].slice(1);
@@ -67,17 +74,17 @@ getMessageBasicInfo = message => {
     var forwardFromId = message.forward_from_chat.id;
     var forwardFromName = message.forward_from_chat.title ? message.forward_from_chat.title : ('@'+message.forward_from_chat.username);
   }
-  return [text, chatId, userId, userName, addition, replyToId, replyToName, replyToText, forwardFromId, forwardFromName]
+  return [text, chatId, userId, userName, addition, replyToId, replyToName, replyToText, forwardFromId, forwardFromName, isSliced]
 }
 
 bot.on('text', message => {
-  [text, chatId, userId, userName, addition, replyToId, replyToName, replyToText, forwardFromId, forwardFromName] = getMessageBasicInfo(message);
+  [text, chatId, userId, userName, addition, replyToId, replyToName, replyToText, forwardFromId, forwardFromName, isSliced] = getMessageBasicInfo(message);
   main.botMessage({'chatId':chatId, 'userId':userId, 'userName':userName, 'text':text, 'replyToId':replyToId, 'replyToName':replyToName,
-    'forwardFromId':forwardFromId, 'forwardFromName':forwardFromName, 'replyToText':replyToText, 'addition':addition});
+    'forwardFromId':forwardFromId, 'forwardFromName':forwardFromName, 'replyToText':replyToText, 'addition':addition, 'isSliced':isSliced});
 });
 
 ['audio', 'document', 'photo', 'sticker', 'video', 'voice', 'video_note'].forEach(x => bot.on(x, message => {
-  [text, chatId, userId, userName, addition, replyToId, replyToName, replyToText, forwardFromId, forwardFromName] = getMessageBasicInfo(message);
+  [text, chatId, userId, userName, addition, replyToId, replyToName, replyToText, forwardFromId, forwardFromName, isSliced] = getMessageBasicInfo(message);
   var file = x == 'photo' ? message[x].pop() : message[x]
   var fileId = file.file_id
   if (x == 'sticker') var extension = 'webp';
@@ -87,31 +94,31 @@ bot.on('text', message => {
   var attachment = bot.getFileStream(fileId);
   attachment.path += '.' + extension;
   main.botMessage({'chatId':chatId, 'userId':userId, 'userName':userName, 'text':text, 'replyToId':replyToId, 'replyToName':replyToName,
-        'forwardFromId':forwardFromId, 'forwardFromName':forwardFromName, 'replyToText':replyToText, 'attachment':attachment});
+        'forwardFromId':forwardFromId, 'forwardFromName':forwardFromName, 'replyToText':replyToText, 'attachment':attachment, 'isSliced':isSliced});
 }));
 
 bot.on('venue', message => {
-  [text, chatId, userId, userName, addition, replyToId, replyToName, replyToText, forwardFromId, forwardFromName] = getMessageBasicInfo(message);
+  [text, chatId, userId, userName, addition, replyToId, replyToName, replyToText, forwardFromId, forwardFromName, isSliced] = getMessageBasicInfo(message);
   var venue = message.venue;
   addition += '\n🌏: {}\n🚩: {}\n🗺️: {}, {}'.format(venue.foursquare_id, venue.title, venue.address, venue.location.latitude, venue.location.longitude);
   main.botMessage({'chatId':chatId, 'userId':userId, 'userName':userName, 'text':text, 'replyToId':replyToId, 'replyToName':replyToName,
-    'forwardFromId':forwardFromId, 'forwardFromName':forwardFromName, 'replyToText':replyToText, 'addition':addition});
+    'forwardFromId':forwardFromId, 'forwardFromName':forwardFromName, 'replyToText':replyToText, 'addition':addition, 'isSliced':isSliced});
 });
 
 bot.on('contact', message => {
-  [text, chatId, userId, userName, addition, replyToId, replyToName, replyToText, forwardFromId, forwardFromName] = getMessageBasicInfo(message);
+  [text, chatId, userId, userName, addition, replyToId, replyToName, replyToText, forwardFromId, forwardFromName, isSliced] = getMessageBasicInfo(message);
   var contact = message.contact;
   addition += '\n📱: ' + contact.phone_number;
   addition += '\n姓名:' + contact.last_name ? (contact.first_name + contact.last_name) : contact.first_name;
   addition += 'ID: ' + contact.user_id;
   main.botMessage({'chatId':chatId, 'userId':userId, 'userName':userName, 'text':text, 'replyToId':replyToId, 'replyToName':replyToName,
-    'forwardFromId':forwardFromId, 'forwardFromName':forwardFromName, 'replyToText':replyToText, 'addition':addition});
+    'forwardFromId':forwardFromId, 'forwardFromName':forwardFromName, 'replyToText':replyToText, 'addition':addition, 'isSliced':isSliced});
 });
 
 bot.on('location', message => {
-  [text, chatId, userId, userName, addition, replyToId, replyToName, replyToText, forwardFromId, forwardFromName] = getMessageBasicInfo(message);
+  [text, chatId, userId, userName, addition, replyToId, replyToName, replyToText, forwardFromId, forwardFromName, isSliced] = getMessageBasicInfo(message);
   var location = message.location;
   addition += '\n🗺️: {}, {}'.format(location.latitude, location.longitude);
   main.botMessage({'chatId':chatId, 'userId':userId, 'userName':userName, 'text':text, 'replyToId':replyToId, 'replyToName':replyToName,
-    'forwardFromId':forwardFromId, 'forwardFromName':forwardFromName, 'replyToText':replyToText, 'addition':addition});
+    'forwardFromId':forwardFromId, 'forwardFromName':forwardFromName, 'replyToText':replyToText, 'addition':addition, 'isSliced':isSliced});
 });
