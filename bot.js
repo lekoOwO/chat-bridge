@@ -57,13 +57,13 @@ getMessageBasicInfo = message => {
     if (replyToId == exports.id){
       replyToName = message.reply_to_message.text.split('>')[0].slice(1);
       var replyToText = message.reply_to_message.caption ? message.reply_to_message.caption : message.reply_to_message.text;
-      var offset = '<>:'.length
+      var offset = '<>: '.length
       var isSliced = replyToText.length > replyToName.length+offset+replyToTextLimit;
       replyToText = replyToText.substr(replyToName.length+offset, replyToTextLimit);
     }
     else {
       var replyToText = message.reply_to_message.caption ? message.reply_to_message.caption : message.reply_to_message.text;
-      var isSliced = replyToText.length > (replyToTextLimit+1);
+      var isSliced = replyToText.length > replyToTextLimit;
       replyToText = replyToText.substr(0, replyToTextLimit);
   }}
   if (message.forward_from){
