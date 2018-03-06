@@ -57,8 +57,9 @@ getMessageBasicInfo = message => {
     if (replyToId == exports.id){
       replyToName = message.reply_to_message.text.split('>')[0].slice(1);
       var replyToText = message.reply_to_message.caption ? message.reply_to_message.caption : message.reply_to_message.text;
-      var isSliced = replyToText.length > replyToName.length+4+replyToTextLimit;
-      replyToText = replyToText.substr(replyToName.length+4, replyToTextLimit);
+      var offset = '<>:'.length
+      var isSliced = replyToText.length > replyToName.length+offset+replyToTextLimit;
+      replyToText = replyToText.substr(replyToName.length+offset, replyToTextLimit);
     }
     else {
       var replyToText = message.reply_to_message.caption ? message.reply_to_message.caption : message.reply_to_message.text;
