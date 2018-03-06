@@ -84,6 +84,12 @@ bot.on('text', message => {
     'forwardFromId':forwardFromId, 'forwardFromName':forwardFromName, 'replyToText':replyToText, 'addition':addition, 'isSliced':isSliced});
 });
 
+bot.on('edited_message', message => {
+  [text, chatId, userId, userName, addition, replyToId, replyToName, replyToText, forwardFromId, forwardFromName, isSliced] = getMessageBasicInfo(message);
+  main.botMessage({'chatId':chatId, 'userId':userId, 'userName':userName, 'text':text, 'replyToId':replyToId, 'replyToName':replyToName,
+    'forwardFromId':forwardFromId, 'forwardFromName':forwardFromName, 'replyToText':replyToText, 'addition':addition, 'isSliced':isSliced, 'isEdited':true});
+});
+
 ['audio', 'document', 'photo', 'sticker', 'video', 'voice', 'video_note'].forEach(x => bot.on(x, message => {
   [text, chatId, userId, userName, addition, replyToId, replyToName, replyToText, forwardFromId, forwardFromName, isSliced] = getMessageBasicInfo(message);
   var file = x == 'photo' ? message[x].pop() : message[x]

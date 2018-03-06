@@ -66,13 +66,14 @@ getTgInfo = (userId, userName, chatId, replyToId, replyToName, forwardFromId, fo
   return [userName, threadId, replyToName, forwardFromName]
 }
 
-exports.botMessage = ({chatId, userId, text='', userName, addition='', replyToId, replyToName, forwardFromId, forwardFromName, replyToText, attachment, sticker, cb=() => {}, isSliced}={}) => {
+exports.botMessage = ({chatId, userId, text='', userName, addition='', replyToId, replyToName, forwardFromId, forwardFromName, replyToText, attachment, sticker, cb=() => {}, isSliced, isEdited}={}) => {
   [userName, threadId, replyToName, forwardFromName] = getTgInfo(userId, userName, chatId, replyToId, replyToName, forwardFromId, forwardFromName);
   if (!threadId) return
   if (replyToName) text = isSliced ? '<{}>:({}: {}...)\n{}'.format(userName, replyToName, replyToText, text) : '<{}>:({}: {})\n{}'.format(userName, replyToName, replyToText, text);
   else if (forwardFromName) text = '<{}>:\n[轉傳自 {}]\n{}'.format(userName, forwardFromName, text) ;
   else text = '<{}>: {}'.format(userName, text);
   text += addition;
+  if (isEdited) text = '[已編輯]\n' + text;
   messenger.send(removeEmpty({'text':text, 'threadId':threadId, 'attachment':attachment, 'sticker':sticker, 'cb':cb}));
 }
 
