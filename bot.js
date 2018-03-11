@@ -121,9 +121,9 @@ bot.on('venue', message => {
 bot.on('contact', message => {
   [text, chatId, userId, userName, addition, replyToId, replyToName, replyToText, forwardFromId, forwardFromName, isSliced] = getMessageBasicInfo(message);
   var contact = message.contact;
-  addition += '\n📱: ' + contact.phone_number;
-  addition += '\n姓名:' + contact.last_name ? (contact.first_name + contact.last_name) : contact.first_name;
-  addition += 'ID: ' + contact.user_id;
+  if (contact.phone_number) addition += '\n📱: ' + contact.phone_number;
+  if (contact.first_name) addition += '\n姓名:' + (contact.last_name ? (contact.first_name + contact.last_name) : contact.first_name);
+  if (contact.user_id) addition += '\nID: ' + contact.user_id;
   main.botMessage({'chatId':chatId, 'userId':userId, 'userName':userName, 'text':text, 'replyToId':replyToId, 'replyToName':replyToName,
     'forwardFromId':forwardFromId, 'forwardFromName':forwardFromName, 'replyToText':replyToText, 'addition':addition, 'isSliced':isSliced});
 });
