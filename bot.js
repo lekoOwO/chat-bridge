@@ -113,7 +113,8 @@ bot.on('edited_message', message => {
 bot.on('venue', message => {
   [text, chatId, userId, userName, addition, replyToId, replyToName, replyToText, forwardFromId, forwardFromName, isSliced] = getMessageBasicInfo(message);
   var venue = message.venue;
-  addition += '\n🌏: {}\n🚩: {}\n🗺️: {}, {}'.format(venue.foursquare_id, venue.title, venue.address, venue.location.latitude, venue.location.longitude);
+  if (!(replyToId | forwardFromId)) addition += '\n';
+  addition += '🌏: {}\n🚩: {}\n🗺️: {}, {}'.format(venue.foursquare_id, venue.title, venue.address, venue.location.latitude, venue.location.longitude);
   main.botMessage({'chatId':chatId, 'userId':userId, 'userName':userName, 'text':text, 'replyToId':replyToId, 'replyToName':replyToName,
     'forwardFromId':forwardFromId, 'forwardFromName':forwardFromName, 'replyToText':replyToText, 'addition':addition, 'isSliced':isSliced});
 });
@@ -121,7 +122,7 @@ bot.on('venue', message => {
 bot.on('contact', message => {
   [text, chatId, userId, userName, addition, replyToId, replyToName, replyToText, forwardFromId, forwardFromName, isSliced] = getMessageBasicInfo(message);
   var contact = message.contact;
-  if (!(replyToId | forwardFromId)) addition += '\n'
+  if (!(replyToId | forwardFromId)) addition += '\n';
   if (contact.phone_number) addition += '📱: ' + contact.phone_number;
   if (contact.first_name) addition += '\n姓名:' + (contact.last_name ? (contact.first_name + contact.last_name) : contact.first_name);
   if (contact.user_id) addition += '\nID: ' + contact.user_id;
@@ -132,7 +133,8 @@ bot.on('contact', message => {
 bot.on('location', message => {
   [text, chatId, userId, userName, addition, replyToId, replyToName, replyToText, forwardFromId, forwardFromName, isSliced] = getMessageBasicInfo(message);
   var location = message.location;
-  addition += '\n🗺️: {}, {}'.format(location.latitude, location.longitude);
+  if (!(replyToId | forwardFromId)) addition += '\n';
+  addition += '🗺️: {}, {}'.format(location.latitude, location.longitude);
   main.botMessage({'chatId':chatId, 'userId':userId, 'userName':userName, 'text':text, 'replyToId':replyToId, 'replyToName':replyToName,
     'forwardFromId':forwardFromId, 'forwardFromName':forwardFromName, 'replyToText':replyToText, 'addition':addition, 'isSliced':isSliced});
 });
