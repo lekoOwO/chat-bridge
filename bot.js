@@ -33,8 +33,8 @@ const firstUpperCase = ([first, ...rest]) => first.toUpperCase() + rest.join('')
 exports.init = () => bot.getMe().then(result => exports.id = result.id)
 exports.send = ({text='', chatId=main.testTgId, photo, audio, doc, game, video, voice, videoNote, venue, contact, location, sticker, cb=() => {}}={}) => {
   if (photo) bot.sendPhoto(chatId, photo, {'caption':text}).then(() => cb());
-  else if (audio) bot.sendAudio(chatId, audio, {}, {contentType: mime.lookup(audio)}).then(() => cb());
-  else if (doc) bot.sendDocument(chatId, doc, {}, {contentType: mime.lookup(doc)}).then(() => cb());
+  else if (audio) bot.sendAudio(chatId, audio, {'caption':text}, {contentType: mime.lookup(audio)}).then(() => cb());
+  else if (doc) bot.sendDocument(chatId, doc, {'caption':text}, {contentType: mime.lookup(doc)}).then(() => cb());
   else if (game) bot.sendGame(chatId, game).then(() => cb());
   else if (video) bot.sendVideo(chatId, video, {'caption':text}, {contentType: mime.lookup(video)}).then(() => cb());
   else if (voice) bot.sendVoice(chatId, voice, {'caption':text}, {contentType: mime.lookup(voice)}).then(() => cb());
