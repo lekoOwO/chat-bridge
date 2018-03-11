@@ -15,9 +15,9 @@ var [testMsgrId, testTgId, groupTgId, groupMsgrId, debug, fbAccount, tgUsers, to
 var init = () => {
   if (fs.existsSync('config.json')) {
     jsonfile.readFile('./config.json', (err, obj) => {
-      [testMsgrId, testTgId, groupTgId, groupMsgrId, debug, fbAccount, tgUsers, token, replyToTextLimit] = [
-        exports.testMsgrId, exports.testTgId, exports.groupTgId, exports.groupMsgrId, exports.debug, exports.fbAccount, exports.tgUsers, exports.token, exports.replyToTextLimit] = [
-          obj.testMsgrId, obj.testTgId, obj.groupTgId, obj.groupMsgrId, obj.debug, obj.fbAccount, obj.tgUsers, obj.token, obj.replyToTextLimit];
+      [testMsgrId, testTgId, groupTgId, groupMsgrId, debug, fbAccount, tgUsers, token, replyToTextLimit, downloadToBuffer] = [
+        exports.testMsgrId, exports.testTgId, exports.groupTgId, exports.groupMsgrId, exports.debug, exports.fbAccount, exports.tgUsers, exports.token, exports.replyToTextLimit, exports.downloadToBuffer] = [
+          obj.testMsgrId, obj.testTgId, obj.groupTgId, obj.groupMsgrId, obj.debug, obj.fbAccount, obj.tgUsers, obj.token, obj.replyToTextLimit, obj.downloadToBuffer];
       console.log('DEBUG = ' + debug.toString());
       bot = require("./bot.js")
       bot.init()
@@ -42,7 +42,8 @@ var init = () => {
         1234567890: 'Test Nickname for specified ID'
       },
       token: "TG_BOT_TOKEN",
-      replyToTextLimit: 8
+      replyToTextLimit: 8,
+      downloadToBuffer: true
 
     }, {spaces: 2}, () => {
       console.error('請正確填寫 config.json!');

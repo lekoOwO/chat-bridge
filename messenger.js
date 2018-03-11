@@ -4,16 +4,21 @@ const http = require('http');
 const https = require('https');
 const fb = require("facebook-chat-api");
 const fbAccount = main.fbAccount;
+const buffer = require('request').defaults({ encoding: null });
 
 const removeEmpty = (x) => {var obj = Object.assign({}, x);Object.keys(obj).forEach((key) => (obj[key] == null) && delete obj[key]);return obj;}
 
-var download = function(url, dest, cb) {
+const download = main.downloadToBuffer ? (url, dest, cb) => {
+  buffer.get(url, function (err, res, body) {
+    if (err) {console.log(err);return}
+    cb(body)
+})} : (url, dest, cb) => {
   var file = fs.createWriteStream(dest);
   var protocal = url.split(':')[0].slice(-1) == 's' ? https : http
   var request = protocal.get(url, function(response) {
     response.pipe(file);
     file.on('finish', function() {
-      file.close(cb);  // close() is async, call cb after close completes.
+      file.close(() => cb(dest));  // close() is async, call cb after close completes.
     });
   }).on('error', function(err) { // Handle errors
     fs.unlink(dest); // Delete the file async. (But we don't check the result)
@@ -55,18 +60,18 @@ if (fs.existsSync('appstate.json')) {
                         case "animated_image":
                         case "photo":
                           var fileName = i.ID + '.' + i.url.split('.').pop().split('?')[0] || i.stickerID + '.png'
-                          download(i.url, fileName, () => main.messengerMessage(
-                            {'userName':userName, 'addition':event.body, 'threadId':threadID, 'senderID':senderID, 'photo':fileName, 'cb':() => fs.unlink(fileName)}));
+                          download(i.url, fileName, x => main.messengerMessage(
+                            {'userName':userName, 'addition':event.body, 'threadId':threadID, 'senderID':senderID, 'photo':x, 'cb':() => main.downloadToBuffer ? () => {} : fs.unlink(fileName)}));
                           break;
                         case "file":
                           var fileName = i.name
-                          download(i.url, fileName, () => main.messengerMessage(
-                            {'userName':userName, 'addition':event.body, 'threadId':threadID, 'senderID':senderID, 'file':fileName, 'cb':() =>fs.unlink(fileName)}));
+                          download(i.url, fileName, x => main.messengerMessage(
+                            {'userName':userName, 'addition':event.body, 'threadId':threadID, 'senderID':senderID, 'file':x, 'cb':() => main.downloadToBuffer ? () => {} : fs.unlink(fileName)}));
                           break;
                         case "video":
                           var fileName = i.filename
-                          download(i.url, fileName, () => main.messengerMessage(
-                            {'userName':userName, 'addition':event.body, 'threadId':threadID, 'senderID':senderID, "video":fileName, 'cb':() =>fs.unlink(fileName)}));
+                          download(i.url, fileName, x => main.messengerMessage(
+                            {'userName':userName, 'addition':event.body, 'threadId':threadID, 'senderID':senderID, "video":x, 'cb':() => main.downloadToBuffer ? () => {} : fs.unlink(fileName)}));
                           break;
                         case "audio":
                           var extension = i.url.split('.').pop().split('?')[0]
@@ -74,8 +79,8 @@ if (fs.existsSync('appstate.json')) {
                           var fileName = i.filename
                           if (extension == 'mp4') {fileName += '.mp3';}
                           else if (extension == 'off' | extension == 'opus') var audioType = 'voice';
-                          download(i.url, fileName, () => main.messengerMessage(
-                            {'userName':userName, 'addition':event.body, 'threadId':threadID, 'senderID':senderID, [audioType]:fileName, 'cb':() =>fs.unlink(fileName)}));
+                          download(i.url, fileName, x => main.messengerMessage(
+                            {'userName':userName, 'addition':event.body, 'threadId':threadID, 'senderID':senderID, [audioType]:x, 'cb':() => main.downloadToBuffer ? () => {} : fs.unlink(fileName)}));
                           break;
                         case "share":
                           main.messengerMessage({'userName':userName, 'addition':i.url, 'threadId':threadID, 'senderID':senderID})
