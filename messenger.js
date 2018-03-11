@@ -1,30 +1,28 @@
-const fs = require('fs');
-const main = require('./main.js')
-const http = require('http');
-const https = require('https');
-const fb = require("facebook-chat-api");
+const fs        = require('fs');
+const main      = require('./main.js')
+const http      = require('http');
+const https     = require('https');
+const fb        = require("facebook-chat-api");
 const fbAccount = main.fbAccount;
-const buffer = require('request').defaults({ encoding: null });
+const buffer    = require('request').defaults({ encoding: null });
 
 const removeEmpty = (x) => {var obj = Object.assign({}, x);Object.keys(obj).forEach((key) => (obj[key] == null) && delete obj[key]);return obj;}
 
-const download = main.downloadToBuffer ? (url, dest, cb) => {
-  buffer.get(url, function (err, res, body) {
-    if (err) {console.log(err);return}
-    cb(body)
-})} : (url, dest, cb) => {
-  var file = fs.createWriteStream(dest);
-  var protocal = url.split(':')[0].slice(-1) == 's' ? https : http
-  var request = protocal.get(url, function(response) {
-    response.pipe(file);
-    file.on('finish', function() {
-      file.close(() => cb(dest));  // close() is async, call cb after close completes.
+const download = main.downloadToBuffer ? 
+  (url, dest, cb) => buffer.get(url, (err, res, body) => {if (err) {console.error(err);return}; cb(body)}) : // download to an buffer object if downloadToBuffer
+  (url, dest, cb) => {
+    var file      = fs.createWriteStream(dest);
+    var protocal  = url.split(':')[0].slice(-1) == 's' ? https : http
+    var request   = protocal.get(url, response => {
+      response.pipe(file);
+      file.on('finish', () => {
+        file.close(() => cb(dest));  // close() is async, call cb after close completes.
+      });
+    }).on('error', err => { // Handle errors
+      fs.unlink(dest); // Delete the file async. (But we don't check the result)
+      console.error(err);
     });
-  }).on('error', function(err) { // Handle errors
-    fs.unlink(dest); // Delete the file async. (But we don't check the result)
-    console.error(err);
-  });
-};
+  };
 
 if (fs.existsSync('appstate.json')) {
   fb({appState: JSON.parse(fs.readFileSync('appstate.json', 'utf8'))}, (err, api) => {
