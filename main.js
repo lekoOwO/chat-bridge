@@ -11,7 +11,7 @@ console.log("   │   github.com/rexx0520/TGBridge_JS   │")
 console.log("   │                                     │")
 console.log("   ╰─────────────────────────────────────╯")
 
-var [testMsgrId, testTgId, groupTgId, groupMsgrId, debug, fbAccount, tgUsers, token, chats] = []
+var [testMsgrId, testTgId, groupTgId, groupMsgrId, debug, fbAccount, tgUsers, token, replyToTextLimit, downloadToBuffer, chats] = []
 var init = () => {
   if (fs.existsSync('config.json')) {
     jsonfile.readFile('./config.json', (err, obj) => {

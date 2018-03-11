@@ -44,7 +44,7 @@ if (fs.existsSync('appstate.json')) {
                 api.getThreadInfoGraphQL(threadID, (err, info) => {
                   if (err) return console.log(err);
                   var nicknames = info.nicknames;
-                  var userName = senderID in nicknames ? nicknames[senderID] : api.getUserInfo(senderID, (err, users) => {
+                  var userName  = senderID in nicknames ? nicknames[senderID] : api.getUserInfo(senderID, (err, users) => {
                     if(err) return console.error(err);userNameResolved(event, users[senderID].name, threadID, senderID);});
   
                   function userNameResolved(event, userName, threadID, senderID){
@@ -74,7 +74,7 @@ if (fs.existsSync('appstate.json')) {
                         case "audio":
                           var extension = i.url.split('.').pop().split('?')[0]
                           var audioType = 'file';
-                          var fileName = i.filename
+                          var fileName  = i.filename
                           if (extension == 'mp4') {fileName += '.mp3';}
                           else if (extension == 'off' | extension == 'opus') var audioType = 'voice';
                           download(i.url, fileName, x => main.messengerMessage(
