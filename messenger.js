@@ -58,7 +58,6 @@ if (fs.existsSync('appstate.json')) {
                           download(i.url, fileName, () => main.messengerMessage(
                             {'userName':userName, 'addition':event.body, 'threadId':threadID, 'senderID':senderID, 'photo':fileName, 'cb':() => fs.unlink(fileName)}));
                           break;
-                        case "share":
                         case "file":
                           var fileName = i.name
                           download(i.url, fileName, () => main.messengerMessage(
@@ -77,6 +76,9 @@ if (fs.existsSync('appstate.json')) {
                           else if (extension == 'off' | extension == 'opus') var audioType = 'voice';
                           download(i.url, fileName, () => main.messengerMessage(
                             {'userName':userName, 'addition':event.body, 'threadId':threadID, 'senderID':senderID, [audioType]:fileName, 'cb':() =>fs.unlink(fileName)}));
+                          break;
+                        case "share":
+                          main.messengerMessage({'userName':userName, 'addition':i.url, 'threadId':threadID, 'senderID':senderID})
                           break;
                       }
                     }
