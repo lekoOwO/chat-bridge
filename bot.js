@@ -25,25 +25,25 @@ const token = main.token;
 const TelegramBot = require('node-telegram-bot-api'); // api
 const bot = new TelegramBot(token, { polling: true });
 
-const replyToTextLimit = main.replyToTextLimit;
+const previewTextLimit = main.previewTextLimit;
 
 const removeEmpty = (x) => {var obj = Object.assign({}, x);Object.keys(obj).forEach((key) => (obj[key] == null) && delete obj[key]);return obj;}
 const firstUpperCase = ([first, ...rest]) => first.toUpperCase() + rest.join('');
 
 exports.init = () => bot.getMe().then(result => exports.id = result.id)
 exports.send = ({text='', chatId=main.testTgId, photo, audio, doc, game, video, voice, videoNote, venue, contact, location, sticker, cb=() => {}}={}) => {
-  if (photo) bot.sendPhoto(chatId, photo, {'caption':text}).then(() => cb());
-  else if (audio) bot.sendAudio(chatId, audio, {'caption':text}, {contentType: mime.lookup(audio)}).then(() => cb());
-  else if (doc) bot.sendDocument(chatId, doc, {'caption':text}, {contentType: mime.lookup(doc)}).then(() => cb());
+  if (photo) bot.sendPhoto(chatId, photo, {'caption':text, 'parse_mode':'Markdown'}).then(() => cb());
+  else if (audio) bot.sendAudio(chatId, audio, {'caption':text, 'parse_mode':'Markdown'}, {contentType: mime.lookup(audio)}).then(() => cb());
+  else if (doc) bot.sendDocument(chatId, doc, {'caption':text, 'parse_mode':'Markdown'}, {contentType: mime.lookup(doc)}).then(() => cb());
   else if (game) bot.sendGame(chatId, game).then(() => cb());
-  else if (video) bot.sendVideo(chatId, video, {'caption':text}, {contentType: mime.lookup(video)}).then(() => cb());
-  else if (voice) bot.sendVoice(chatId, voice, {'caption':text}, {contentType: mime.lookup(voice)}).then(() => cb());
+  else if (video) bot.sendVideo(chatId, video, {'caption':text, 'parse_mode':'Markdown'}, {contentType: mime.lookup(video)}).then(() => cb());
+  else if (voice) bot.sendVoice(chatId, voice, {'caption':text, 'parse_mode':'Markdown'}, {contentType: mime.lookup(voice)}).then(() => cb());
   else if (videoNote) bot.sendVideoNote(chatId, videoNote, {}, {contentType: mime.lookup(videoNote)}).then(() => cb());
   else if (venue) bot.sendVenue(chatId, venue.latitude, venue.longitude, venue.title, venue.address).then(() => cb());
   else if (contact) bot.sendContact(chatId, contact.phoneNumber, contact.firstName).then(() => cb());
   else if (location) bot.sendLocation(chatId, location.latitude, location.longitude).then(() => cb());
   else if (sticker) bot.sendSticker(chatId, sticker).then(() => cb());
-  else bot.sendMessage(chatId, text).then(() => cb());
+  else bot.sendMessage(chatId, text, {'parse_mode':'Markdown'}).then(() => cb());
 }
 
 getMessageBasicInfo = message => {
@@ -64,12 +64,12 @@ getMessageBasicInfo = message => {
     if (replyToId == exports.id){
       replyToName = message.reply_to_message.text.split('>')[0].slice(1);
       var offset = '<>: '.length
-      var isSliced = noTextInOriginMessage ? false : replyToText.length > replyToName.length+offset+replyToTextLimit;
-      replyToText = noTextInOriginMessage ? replyToText : replyToText.substr(replyToName.length+offset, replyToTextLimit);
+      var isSliced = noTextInOriginMessage ? false : replyToText.length > replyToName.length+offset+previewTextLimit;
+      replyToText = noTextInOriginMessage ? replyToText : replyToText.substr(replyToName.length+offset, previewTextLimit);
     }
     else {
-      var isSliced = noTextInOriginMessage ? false : replyToText.length > replyToTextLimit;
-      replyToText = noTextInOriginMessage ? replyToText : replyToText.substr(0, replyToTextLimit);
+      var isSliced = noTextInOriginMessage ? false : replyToText.length > previewTextLimit;
+      replyToText = noTextInOriginMessage ? replyToText : replyToText.substr(0, previewTextLimit);
   }
 }
   if (message.forward_from){

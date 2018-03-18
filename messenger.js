@@ -6,6 +6,9 @@ const fb        = require("facebook-chat-api");
 const fbAccount = main.fbAccount;
 const buffer    = require('request').defaults({ encoding: null });
 
+const format    = require('string-format')
+format.extend(String.prototype, {})
+
 const removeEmpty = (x) => {var obj = Object.assign({}, x);Object.keys(obj).forEach((key) => (obj[key] == null) && delete obj[key]);return obj;}
 
 const download = main.downloadToBuffer ? 
@@ -81,7 +84,10 @@ if (fs.existsSync('appstate.json')) {
                             {'userName':userName, 'addition':event.body, 'threadId':threadID, 'senderID':senderID, [audioType]:x, 'cb':() => main.downloadToBuffer ? () => {} : fs.unlink(fileName)}));
                           break;
                         case "share":
-                          main.messengerMessage({'userName':userName, 'addition':i.url, 'threadId':threadID, 'senderID':senderID})
+                          let link = event.body.match(/http.*?\n/) ? event.body.match(/http.*?\n/)[0].replace('\n', '') : event.body;
+                          let text = '[{}]({})'.format(i.description ? i.source + ': ' + i.description.substr(0, main.previewTextLimit) + (i.description.length <= main.previewTextLimit ? '' : '...') : i.title == '' ? i.source + " 的貼文" : i.title, link)
+                          text = event.body.replace(link, text)
+                          main.messengerMessage({'userName':userName, 'addition':text, 'threadId':threadID, 'senderID':senderID})
                           break;
                       }
                     }

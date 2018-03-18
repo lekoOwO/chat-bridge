@@ -11,13 +11,13 @@ console.log("   │   github.com/rexx0520/TGBridge_JS   │")
 console.log("   │                                     │")
 console.log("   ╰─────────────────────────────────────╯")
 
-var [testMsgrId, testTgId, groupTgId, groupMsgrId, debug, fbAccount, tgUsers, token, replyToTextLimit, downloadToBuffer, chats] = []
+var [testMsgrId, testTgId, groupTgId, groupMsgrId, debug, fbAccount, tgUsers, token, previewTextLimit, downloadToBuffer, chats] = []
 var init = () => {
   if (fs.existsSync('config.json')) {
     jsonfile.readFile('./config.json', (err, obj) => {
-      [testMsgrId, testTgId, groupTgId, groupMsgrId, debug, fbAccount, tgUsers, token, replyToTextLimit, downloadToBuffer] = [
-        exports.testMsgrId, exports.testTgId, exports.groupTgId, exports.groupMsgrId, exports.debug, exports.fbAccount, exports.tgUsers, exports.token, exports.replyToTextLimit, exports.downloadToBuffer] = [
-          obj.testMsgrId, obj.testTgId, obj.groupTgId, obj.groupMsgrId, obj.debug, obj.fbAccount, obj.tgUsers, obj.token, obj.replyToTextLimit, obj.downloadToBuffer];
+      [testMsgrId, testTgId, groupTgId, groupMsgrId, debug, fbAccount, tgUsers, token, previewTextLimit, downloadToBuffer] = [
+        exports.testMsgrId, exports.testTgId, exports.groupTgId, exports.groupMsgrId, exports.debug, exports.fbAccount, exports.tgUsers, exports.token, exports.previewTextLimit, exports.downloadToBuffer] = [
+          obj.testMsgrId, obj.testTgId, obj.groupTgId, obj.groupMsgrId, obj.debug, obj.fbAccount, obj.tgUsers, obj.token, obj.previewTextLimit, obj.downloadToBuffer];
       console.log('DEBUG = ' + debug.toString());
       bot = require("./bot.js")
       bot.init()
@@ -42,7 +42,7 @@ var init = () => {
         1234567890: 'Test Nickname for specified ID'
       },
       token: "TG_BOT_TOKEN",
-      replyToTextLimit: 8,
+      previewTextLimit: 8,
       downloadToBuffer: true
 
     }, {spaces: 2}, () => {
