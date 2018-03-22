@@ -7,6 +7,7 @@ const fbAccount = main.fbAccount;
 const buffer    = require('request').defaults({ encoding: null });
 
 const format    = require('string-format')
+
 format.extend(String.prototype, {})
 
 const removeEmpty = (x) => {var obj = Object.assign({}, x);Object.keys(obj).forEach((key) => (obj[key] == null) && delete obj[key]);return obj;}
@@ -44,7 +45,7 @@ if (fs.existsSync('appstate.json')) {
                 var senderID = event.senderID;
                 if (senderID == id) return 
                 var body = event.body;
-                api.getThreadInfoGraphQL(threadID, (err, info) => {
+                api.getThreadInfo(threadID, (err, info) => {
                   if (err) return console.log(err);
                   var nicknames = info.nicknames;
                   var userName  = senderID in nicknames ? nicknames[senderID] : api.getUserInfo(senderID, (err, users) => {
@@ -84,11 +85,18 @@ if (fs.existsSync('appstate.json')) {
                             {'userName':userName, 'addition':event.body, 'threadId':threadID, 'senderID':senderID, [audioType]:x, 'cb':() => main.downloadToBuffer ? () => {} : fs.unlink(fileName)}));
                           break;
                         case "share":
-                          let link = event.body.match(/http.*?\n/) ? event.body.match(/http.*?\n/)[0].replace('\n', '') : event.body;
-                          let text = '[{}]({})'.format(i.description ? i.source + ': ' + i.description.substr(0, main.previewTextLimit) + (i.description.length <= main.previewTextLimit ? '' : '...') : i.title == '' ? i.source + " 的貼文" : i.title, link)
-                          text = event.body.replace(link, text)
-                          main.messengerMessage({'userName':userName, 'addition':text, 'threadId':threadID, 'senderID':senderID})
-                          break;
+                          if (!(i.url.includes("//l.facebook.com/l.php?u="))){ // if url is a Facebook resource
+                            let linkMarkdown = '[{}]({})'.format(i.description ? i.source + ': ' + i.description.substr(0, main.previewTextLimit) + (i.description.length <= main.previewTextLimit ? '' : '...') : i.title == '' ? i.source + " 的貼文" : i.title, i.url)
+                            let text = event.body + '\n' + linkMarkdown;
+                            main.messengerMessage({'userName':userName, 'addition':text, 'threadId':threadID, 'senderID':senderID})
+                            break;
+                          }
+                          else {
+                            let url = decodeURIComponent(i.url.split('//l.facebook.com/l.php?u=')[1])
+                            let text = '{}\n[{}]({})'.format(event.body, i.title, url)
+                            main.messengerMessage({'userName':userName, 'addition':text, 'threadId':threadID, 'senderID':senderID})
+                            break;
+                          }
                       }
                     }
                   }}
