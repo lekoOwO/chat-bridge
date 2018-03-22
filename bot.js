@@ -2,6 +2,10 @@ const http = require('http');
 const https = require('https');
 const mime = require('mime-types')
 const fs = require('fs');
+
+const showdown = require('showdown');
+const sd = new showdown.Converter({'simplifiedAutoLink': true, 'ghCodeBlocks':true});
+
 var download = function(url, dest, cb) {
   var file = fs.createWriteStream(dest);
   var protocal = url.split(':')[0].slice(-1) == 's' ? https : http
@@ -19,6 +23,11 @@ var download = function(url, dest, cb) {
 var format = require('string-format')
 format.extend(String.prototype, {})
 
+String.prototype.replaceAll = function(search, replacement) {
+  var target = this;
+  return target.replace(new RegExp(search, 'g'), replacement);
+};
+
 const main = require('./main.js')
 
 const token = main.token;
@@ -32,18 +41,20 @@ const firstUpperCase = ([first, ...rest]) => first.toUpperCase() + rest.join('')
 
 exports.init = () => bot.getMe().then(result => exports.id = result.id)
 exports.send = ({text='', chatId=main.testTgId, photo, audio, doc, game, video, voice, videoNote, venue, contact, location, sticker, cb=() => {}}={}) => {
-  if (photo) bot.sendPhoto(chatId, photo, {'caption':text, 'parse_mode':'Markdown'}).then(() => cb());
-  else if (audio) bot.sendAudio(chatId, audio, {'caption':text, 'parse_mode':'Markdown'}, {contentType: mime.lookup(audio)}).then(() => cb());
-  else if (doc) bot.sendDocument(chatId, doc, {'caption':text, 'parse_mode':'Markdown'}, {contentType: mime.lookup(doc)}).then(() => cb());
+  let parse_mode = 'HTML';
+  if (text) text = sd.makeHtml(text.replaceAll('\n','<_changeRow>').replace('<','&lt;').replace('>','&gt;')).replace('<p>','').replace('</p>','').replaceAll('<_changeRow>','\n')
+  if (photo) bot.sendPhoto(chatId, photo, {'caption':text, 'parse_mode':parse_mode}).then(() => cb());
+  else if (audio) bot.sendAudio(chatId, audio, {'caption':text, 'parse_mode':parse_mode}, {contentType: mime.lookup(audio)}).then(() => cb());
+  else if (doc) bot.sendDocument(chatId, doc, {'caption':text, 'parse_mode':parse_mode}, {contentType: mime.lookup(doc)}).then(() => cb());
   else if (game) bot.sendGame(chatId, game).then(() => cb());
-  else if (video) bot.sendVideo(chatId, video, {'caption':text, 'parse_mode':'Markdown'}, {contentType: mime.lookup(video)}).then(() => cb());
-  else if (voice) bot.sendVoice(chatId, voice, {'caption':text, 'parse_mode':'Markdown'}, {contentType: mime.lookup(voice)}).then(() => cb());
+  else if (video) bot.sendVideo(chatId, video, {'caption':text, 'parse_mode':parse_mode}, {contentType: mime.lookup(video)}).then(() => cb());
+  else if (voice) bot.sendVoice(chatId, voice, {'caption':text, 'parse_mode':parse_mode}, {contentType: mime.lookup(voice)}).then(() => cb());
   else if (videoNote) bot.sendVideoNote(chatId, videoNote, {}, {contentType: mime.lookup(videoNote)}).then(() => cb());
   else if (venue) bot.sendVenue(chatId, venue.latitude, venue.longitude, venue.title, venue.address).then(() => cb());
   else if (contact) bot.sendContact(chatId, contact.phoneNumber, contact.firstName).then(() => cb());
   else if (location) bot.sendLocation(chatId, location.latitude, location.longitude).then(() => cb());
   else if (sticker) bot.sendSticker(chatId, sticker).then(() => cb());
-  else bot.sendMessage(chatId, text, {'parse_mode':'Markdown'}).then(() => cb());
+  else bot.sendMessage(chatId, text, {'parse_mode':parse_mode}).then(() => cb());
 }
 
 getMessageBasicInfo = message => {

@@ -1,4 +1,4 @@
-// npm install --save Schmavery/facebook-chat-api string-format jsonfile mime-types node-telegram-bot-api
+// npm install --save Schmavery/facebook-chat-api string-format jsonfile mime-types node-telegram-bot-api showdown
 const format = require('string-format')
 const jsonfile = require('jsonfile')
 const fs = require('fs');
