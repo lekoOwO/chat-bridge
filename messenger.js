@@ -31,6 +31,7 @@ const download = main.downloadToBuffer ?
 if (fs.existsSync('appstate.json')) {
   fb({appState: JSON.parse(fs.readFileSync('appstate.json', 'utf8'))}, (err, api) => {
     if(err) return console.error(err);
+    fs.writeFileSync('appstate.json', JSON.stringify(api.getAppState()));
     exports.send = ({text='', threadId=main.testMsgrId, attachment, sticker, cb=() => {}}={}) => {
       api.sendMessage(removeEmpty({'body':text, 'attachment':attachment, 'sticker':sticker}), threadId, () => cb());
     }
