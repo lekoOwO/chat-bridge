@@ -38,6 +38,8 @@ if (fs.existsSync('appstate.json')) {
     exports.id = id;
     var stopListening = api.listen((err, event) => {
         if(err) return console.error(err);
+        console.log(event)
+        if (event.threadID != main.groupMsgrId) return;
         switch(event.type) {
             case "message":
                 var threadID = event.threadID;
@@ -52,7 +54,7 @@ if (fs.existsSync('appstate.json')) {
   
                   function userNameResolved(event, userName, threadID, senderID){
                   if (event.attachments.length == 0){
-                    main.messengerMessage({'userName':userName, 'addition':body, 'threadId':threadID, 'senderID':senderID})
+                    setImmediate(() => main.messengerMessage({'userName':userName, 'addition':body, 'threadId':threadID, 'senderID':senderID}))
                   }
                   else {
                     for(var i of event.attachments){
@@ -61,18 +63,18 @@ if (fs.existsSync('appstate.json')) {
                         case "animated_image":
                         case "photo":
                           var fileName = i.ID + '.' + i.url.split('.').pop().split('?')[0] || i.stickerID + '.png'
-                          download(i.url, fileName, x => main.messengerMessage(
-                            {'userName':userName, 'addition':body, 'threadId':threadID, 'senderID':senderID, 'photo':x, 'cb':() => main.downloadToBuffer ? () => {} : fs.unlink(fileName)}));
+                          setImmediate(() => download(i.url, fileName, x => main.messengerMessage(
+                            {'userName':userName, 'addition':body, 'threadId':threadID, 'senderID':senderID, 'photo':x, 'cb':() => main.downloadToBuffer ? () => {} : fs.unlink(fileName)})))
                           break;
                         case "file":
                           var fileName = i.name
-                          download(i.url, fileName, x => main.messengerMessage(
-                            {'userName':userName, 'addition':body, 'threadId':threadID, 'senderID':senderID, 'file':x, 'cb':() => main.downloadToBuffer ? () => {} : fs.unlink(fileName)}));
+                          setImmediate(() => download(i.url, fileName, x => main.messengerMessage(
+                            {'userName':userName, 'addition':body, 'threadId':threadID, 'senderID':senderID, 'file':x, 'cb':() => main.downloadToBuffer ? () => {} : fs.unlink(fileName)})))
                           break;
                         case "video":
                           var fileName = i.filename
-                          download(i.url, fileName, x => main.messengerMessage(
-                            {'userName':userName, 'addition':body, 'threadId':threadID, 'senderID':senderID, "video":x, 'cb':() => main.downloadToBuffer ? () => {} : fs.unlink(fileName)}));
+                          setImmediate(() => download(i.url, fileName, x => main.messengerMessage(
+                            {'userName':userName, 'addition':body, 'threadId':threadID, 'senderID':senderID, "video":x, 'cb':() => main.downloadToBuffer ? () => {} : fs.unlink(fileName)})))
                           break;
                         case "audio":
                           var extension = i.url.split('.').pop().split('?')[0]
@@ -80,20 +82,20 @@ if (fs.existsSync('appstate.json')) {
                           var fileName  = i.filename
                           if (extension == 'mp4') {fileName += '.mp3';}
                           else if (extension == 'off' | extension == 'opus') var audioType = 'voice';
-                          download(i.url, fileName, x => main.messengerMessage(
-                            {'userName':userName, 'addition':body, 'threadId':threadID, 'senderID':senderID, [audioType]:x, 'cb':() => main.downloadToBuffer ? () => {} : fs.unlink(fileName)}));
+                          setImmediate(() => download(i.url, fileName, x => main.messengerMessage(
+                            {'userName':userName, 'addition':body, 'threadId':threadID, 'senderID':senderID, [audioType]:x, 'cb':() => main.downloadToBuffer ? () => {} : fs.unlink(fileName)})))
                           break;
                         case "share":
                           if (!(i.url.includes("//l.facebook.com/l.php?u="))){ // if url is a Facebook resource
                             let linkHTML = '<a href="{}">{}</a>'.format(i.url, i.description ? i.source + ': ' + i.description.substr(0, main.previewTextLimit) + (i.description.length <= main.previewTextLimit ? '' : '...') : i.title == '' ? i.source + " 的貼文" : i.title)
                             let text = body + '\n' + linkHTML;
-                            main.messengerMessage({'userName':userName, 'addition':text, 'threadId':threadID, 'senderID':senderID})
+                            setImmediate(() => main.messengerMessage({'userName':userName, 'addition':text, 'threadId':threadID, 'senderID':senderID}))
                             break;
                           }
                           else {
                             let url = decodeURIComponent(i.url.split('//l.facebook.com/l.php?u=')[1])
                             let text = '{}\n<a href="{}">{}</a>'.format(body, url, i.title)
-                            main.messengerMessage({'userName':userName, 'addition':text, 'threadId':threadID, 'senderID':senderID})
+                            setImmediate(() => main.messengerMessage({'userName':userName, 'addition':text, 'threadId':threadID, 'senderID':senderID}))
                             break;
                           }
                       }
