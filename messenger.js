@@ -1,3 +1,4 @@
+// 我是錢幣幣
 const fs        = require('fs');
 const main      = require('./main.js')
 const http      = require('http');
