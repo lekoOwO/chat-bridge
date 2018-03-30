@@ -8,6 +8,7 @@ const fbAccount = main.fbAccount;
 const buffer    = require('request').defaults({ encoding: null });
 
 const format    = require('string-format')
+const lang      = main.lang
 
 format.extend(String.prototype, {})
 
@@ -117,6 +118,6 @@ else {
   fb(fbAccount, (err, api) => {
     if(err) return console.error(err);
     fs.writeFileSync('appstate.json', JSON.stringify(api.getAppState())); // session 保存
-    console.log('首次讀取 config, 已保存 session, 請重新開啟!')
+    console.log(lang.sessionSaved)
     process.exit();
 });}

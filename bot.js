@@ -6,6 +6,7 @@ const pascalize = require('humps').pascalize
 
 const showdown = require('showdown');
 const sd = new showdown.Converter({'simplifiedAutoLink': true, 'ghCodeBlocks':true});
+const lang = main.lang;
 
 var download = function(url, dest, cb) {
   var file = fs.createWriteStream(dest);
@@ -143,8 +144,8 @@ bot.on('contact', message => {
   var contact = message.contact;
   if (!(replyToId | forwardFromId)) addition += '\n';
   if (contact.phone_number) addition += '📱: ' + contact.phone_number;
-  if (contact.first_name) addition += '\n姓名:' + (contact.last_name ? (contact.first_name + contact.last_name) : contact.first_name);
-  if (contact.user_id) addition += '\nID: ' + contact.user_id;
+  if (contact.first_name) addition += '\n{}: '.format(lang.name) + (contact.last_name ? (contact.first_name + contact.last_name) : contact.first_name);
+  if (contact.user_id) addition += '\n{}: '.format(lang.id) + contact.user_id;
   setImmediate(() => main.botMessage({'chatId':chatId, 'userId':userId, 'userName':userName, 'text':text, 'replyToId':replyToId, 'replyToName':replyToName,
     'forwardFromId':forwardFromId, 'forwardFromName':forwardFromName, 'replyToText':replyToText, 'addition':addition, 'isSliced':isSliced}))
 });

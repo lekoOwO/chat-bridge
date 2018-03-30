@@ -1,0 +1,12 @@
+{
+    "configError": "請正確填寫 config.json!",
+    "forwardedFrom": "轉傳自 {}",
+    "edited": "已編輯",
+    "photo": "圖片",
+    "file": "檔案",
+    "video": "影片",
+    "sessionSaved": "session 已保存, 請重新開啟本程式!",
+    "name": "姓名",
+    "id": "ID",
+    "ircConnected": "IRC 已連接。"
+}

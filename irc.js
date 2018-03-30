@@ -2,6 +2,7 @@ const main = require('./main.js')
 const irc = require('irc');
 const format = require('string-format')
 format.extend(String.prototype, {})
+const lang = main.lang;
 
 const ircBot = new irc.Client(main.ircHost, main.ircNick, {
     channels: [main.ircChannel],
@@ -16,7 +17,7 @@ const ircBot = new irc.Client(main.ircHost, main.ircNick, {
 });
 
 ircBot.on('registered', (message) => {
-    console.log('Connected to irc.');
+    console.log(lang.ircConnected);
 });
 
 ircBot.on('message' + main.ircChannel, (sender, message) => {

@@ -11,13 +11,15 @@ console.log("   │   github.com/rexx0520/TGBridge_JS   │")
 console.log("   │                                     │")
 console.log("   ╰─────────────────────────────────────╯")
 
-var [testMsgrId, testTgId, groupTgId, groupMsgrId, debug, fbAccount, tgUsers, tgToken, previewTextLimit, downloadToBuffer, chats] = []
+var [testMsgrId, testTgId, groupTgId, groupMsgrId, debug, fbAccount, tgUsers, tgToken, previewTextLimit, downloadToBuffer, chats, lang] = []
 var init = () => {
   if (fs.existsSync('config.json')) {
     jsonfile.readFile('./config.json', (err, obj) => {
       [groupMsgrId, messenger, fbAccount] = [exports.groupMsgrId, exports.messenger, exports.fbAccount] = [obj.groupMsgrId, obj.messenger, obj.fbAccount];
       [groupTgId, tgUsers, tgToken, telegram] = [exports.groupTgId, exports.tgUsers, exports.tgToken, exports.telegram] = [obj.groupTgId, obj.tgUsers, obj.tgToken, obj.telegram];
-      [debug, previewTextLimit, downloadToBuffer] = [exports.debug, exports.previewTextLimit, exports.downloadToBuffer] = [obj.debug, obj.previewTextLimit, obj.downloadToBuffer];
+      [debug, previewTextLimit, downloadToBuffer, lang] = [
+        exports.debug, exports.previewTextLimit, exports.downloadToBuffer, exports.lang] = [
+          obj.debug, obj.previewTextLimit, obj.downloadToBuffer, fs.existsSync('./lang/{}.json'.format(obj.lang)) ? require('./lang/{}.json'.format(obj.lang)) : require('./lang/{}.json'.format('zh-TW'))];
       [irc, ircChannel, ircHost, ircNick, ircUserName, ircRealName, ircPort, ircUseSSL, ircPassword] = [
         exports.irc, exports.ircChannel, exports.ircHost, exports.ircNick, exports.ircUserName, exports.ircRealName, exports.ircPort, exports.ircUseSSL, exports.ircPassword] = [
           obj.irc, obj.ircChannel, obj.ircHost, obj.ircNick, obj.ircUserName, obj.ircRealName, obj.ircPort, obj.ircUseSSL, obj.ircPassword]
@@ -42,6 +44,7 @@ var init = () => {
       debug: false,
       previewTextLimit: 8,
       downloadToBuffer: true,
+      lang: 'zh-TW',
 
       groupTgId: -1234567890,
       groupMsgrId: 12345678998765432,
@@ -70,7 +73,7 @@ var init = () => {
 
 
     }, {spaces: 2}, () => {
-      console.error('請正確填寫 config.json!');
+      console.error(lang.configError);
       process.exit();
     })
   }
@@ -95,10 +98,10 @@ exports.botMessage = ({chatId, userId, text='', userName, addition='', replyToId
   [userName, threadId, replyToName, forwardFromName] = tgGetMsgrInfo(userId, userName, chatId, replyToId, replyToName, forwardFromId, forwardFromName);
   if (!threadId) return
   if (replyToName) text = isSliced ? '<{}>:({}: {}...)\n{}'.format(userName, replyToName, replyToText, text) : '<{}>:({}: {})\n{}'.format(userName, replyToName, replyToText, text);
-  else if (forwardFromName) text = '<{}>:\n[轉傳自 {}]\n{}'.format(userName, forwardFromName, text) ;
+  else if (forwardFromName) text = '<{}>:\n[{}]\n{}'.format(userName, lang.forwardedFrom.format(forwardFromName), text) ;
   else text = '<{}>: {}'.format(userName, text);
   text += addition;
-  if (isEdited) text = '[已編輯]\n' + text;
+  if (isEdited) text = '[{}]\n{}'.format(lang.edited, text);
   setImmediate(() => messenger.send(removeEmpty({'text':text, 'threadId':threadId, 'attachment':attachment, 'sticker':sticker, 'cb':cb})))
   setImmediate(() => ircBot.send(attachmentType ? text + ((text == "<{}>: ".format(userName) ? "" : "\n") + "[{}]").format(attachmentType) : text))
 }
@@ -113,15 +116,15 @@ exports.messengerMessage = ({photo, file, video, senderId, threadId, userName, a
   [userName, chatId] = msgrGetTgInfo(senderId, userName, threadId);
   if (!chatId) return
   if (photo) {
-    setImmediate(() => ircBot.send(userName, '[Photo]\n' + addition))
+    setImmediate(() => ircBot.send(userName, '[{}]\n'.format(lang.photo) + addition))
     setImmediate(() => bot.send({'photo':photo, 'chatId':chatId, 'text':'<{}> '.format(userName) + addition, 'cb':cb}))
   }
   else if (file) {
-    setImmediate(() => ircBot.send(userName, '[File]\n' + addition))
+    setImmediate(() => ircBot.send(userName, '[{}]\n'.format(lang.file) + addition))
     setImmediate(() => bot.send({'doc':file, 'chatId':chatId, 'text':'<{}> '.format(userName) + addition, 'cb':cb}))
   }
   else if (video) {
-    setImmediate(() => ircBot.send(userName, '[Video]\n' + addition))
+    setImmediate(() => ircBot.send(userName, '[{}]\n'.format(lang.video) + addition))
     setImmediate(() => bot.send({'video':video, 'chatId':chatId, 'text':'<{}> '.format(userName) + addition, 'cb':cb}))
   }
   else {
