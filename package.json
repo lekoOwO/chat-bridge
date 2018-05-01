@@ -1,0 +1,21 @@
+{
+  "name": "chat-bridge",
+  "version": "0.1.0",
+  "description": "A chat bridge between Telegram, Messenger & IRC",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rexx0520/chat-bridge.git"
+  },
+  "author": "Rex",
+  "bugs": {
+    "url": "https://github.com/rexx0520/chat-bridge/issues"
+  },
+  "homepage": "https://github.com/rexx0520/chat-bridge#readme",
+  "dependencies": {
+    "string-format": "^1.0.0"
+  }
+}
