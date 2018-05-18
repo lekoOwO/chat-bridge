@@ -2,7 +2,7 @@
 
 > Version 1.0, May 2018
 
-> Copyright (C) [2018] [Rex Tseng]
+> Copyright (C) 2018 Rex Tseng
  
  Everyone is permitted to copy and distribute verbatim or modified
  copies of this license document.
