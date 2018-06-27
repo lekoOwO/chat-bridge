@@ -1,4 +1,3 @@
-// npm install --save Schmavery/facebook-chat-api string-format jsonfile mime-types node-telegram-bot-api showdown irc humps
 const format = require('string-format')
 const jsonfile = require('jsonfile')
 const fs = require('fs');
@@ -7,7 +6,7 @@ format.extend(String.prototype, {})
 console.log("   ╭─────────────────────────────────────╮")
 console.log("   │                                     │")
 console.log("   │   錢幣幣 Desu                        │")
-console.log("   │   github.com/rexx0520/TGBridge_JS   │")
+console.log("   │   github.com/rexx0520/chat-bridge   │")
 console.log("   │                                     │")
 console.log("   ╰─────────────────────────────────────╯")
 
