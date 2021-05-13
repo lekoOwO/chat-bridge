@@ -3,6 +3,7 @@ const https = require('https');
 const mime = require('mime-types')
 const fs = require('fs');
 const pascalize = require('humps').pascalize
+const main = require('./main.js')
 
 const showdown = require('showdown');
 const sd = new showdown.Converter({'simplifiedAutoLink': true, 'ghCodeBlocks':true});
@@ -29,8 +30,6 @@ String.prototype.replaceAll = function(search, replacement) {
   var target = this;
   return target.replace(new RegExp(search, 'g'), replacement);
 };
-
-const main = require('./main.js')
 
 const token = main.tgToken;
 const TelegramBot = require('node-telegram-bot-api'); // api

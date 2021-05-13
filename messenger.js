@@ -39,7 +39,7 @@ if (fs.existsSync('appstate.json')) {
     }
     id = api.getCurrentUserID()
     exports.id = id;
-    var stopListening = api.listen((err, event) => {
+    var stopListening = api.listenMqtt((err, event) => {
         if(err) return console.error(err);
         console.log(event)
         if (event.threadID != main.groupMsgrId) return;
@@ -115,7 +115,11 @@ if (fs.existsSync('appstate.json')) {
   });
 }
 else {
-  fb(fbAccount, (err, api) => {
+  const options = {
+    userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.4430.93 Safari/537.36',
+    listenEvents: true
+  }
+  fb(fbAccount, options, (err, api) => {
     if(err) return console.error(err);
     fs.writeFileSync('appstate.json', JSON.stringify(api.getAppState())); // session 保存
     console.log(lang.sessionSaved)

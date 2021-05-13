@@ -27,6 +27,7 @@ var init = () => {
       console.log('Messenger: ' + messenger.toString());
       console.log('Telegram: ' + telegram.toString());
       console.log('IRC: ' + irc.toString())
+      global.lang = lang;
       setImmediate(() => {
         bot = telegram ? require("./bot.js") : {send: () => {}, init: () => {}}
         bot.init()

@@ -16,13 +16,13 @@
   },
   "homepage": "https://github.com/rexx0520/chat-bridge#readme",
   "dependencies": {
-    "string-format": "^2.0.0",
+    "facebook-chat-api": "Schmavery/facebook-chat-api",
+    "humps": "^2.0.1",
+    "irc": "^0.5.2",
     "jsonfile": "^4.0.0",
     "mime-types": "^2.1.18",
     "node-telegram-bot-api": "^0.30.0",
     "showdown": "^1.8.6",
-    "irc": "^0.5.2",
-    "humps": "^2.0.1",
-    "Schmavery/facebook-chat-api": "*"
+    "string-format": "^2.0.0"
   }
 }
