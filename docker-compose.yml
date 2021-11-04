@@ -1,0 +1,10 @@
+version: '2'
+services:
+  chat-bridge:
+    build: .
+    command: node main.js
+    dns:
+      - 8.8.8.8
+    volumes:
+      - .:/usr/app/
+      - /usr/app/node_modules
