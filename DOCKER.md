@@ -1,6 +1,6 @@
-#Docker
+# Docker
 
-To run chat-bridge with docker, ensure that [docker](https://docs.docker.com/engine/install/) and (docker-compose)[https://docs.docker.com/compose/install/] is installed.
+To run chat-bridge with docker, ensure that [docker](https://docs.docker.com/engine/install/) and [docker-compose](https://docs.docker.com/compose/install/) is installed.
 
 Then run
 
